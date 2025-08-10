@@ -1,0 +1,42 @@
+% Load the debugging data.
+load('debuggingTest.mat');
+load('CNNparameters.mat');
+
+% Find the appropriate layers for convolution.
+conv_layers = find(strcmp(layertypes, 'convolve'));
+
+% We'll test layer 2 for example, hence indexing by 1.
+input_layer = conv_layers(1) - 1;
+output_layer = conv_layers(1);
+input_data = layerResults{input_layer};
+expected_output = layerResults{output_layer};
+
+% Get the appropriate filterbank and bias values.
+filterbank = filterbanks{output_layer};
+biasvals = biasvectors{output_layer};
+
+% Apply the convolve function.
+computed_output = apply_convolve(input_data, filterbank, biasvals);
+
+% Compare with the expected output.
+difference = abs(computed_output - expected_output);
+max_difference = max(difference(:));
+fprintf('Maximum difference between computed and expected output: %e\n', max_difference);
+
+% Visualize the results.
+figure;
+
+% Input visualization.
+subplot(2, 3, 1);
+imshow(mean(input_data, 3) + 0.5);
+title('Input');
+
+% Computed output visualization.
+subplot(2, 3, 2);
+imshow(mean(computed_output, 3) + 0.5);
+title('Computed Output');
+
+% Expected output visualization.
+subplot(2, 3, 3);
+imshow(mean(expected_output, 3) + 0.5);
+title('Expected Output');
